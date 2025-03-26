@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Course, Lesson
+from .validators import DescriptionValidator
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -10,6 +11,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
         model = Lesson
         fields = "__all__"
+        validators = [DescriptionValidator(field="description")]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -27,6 +29,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
         model = Course
         fields = ["id", "name", "description", "lessons_count"]
+        validators = [DescriptionValidator(field="description")]
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):
