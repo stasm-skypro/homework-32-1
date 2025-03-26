@@ -2,6 +2,7 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, generics
 from users.permissions import IsModerator, DenyAll, IsOwner
+from .mixins import LessonPermissionMixin
 from .models import Course, Lesson
 from .serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
 import logging
@@ -76,25 +77,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
 # -- API endpoints для создания CRUD-операций с уроками --
-class LessonCreateAPIView(generics.CreateAPIView):
+class LessonCreateAPIView(LessonPermissionMixin, generics.CreateAPIView):
     """API endpoint для создания урока."""
 
     serializer_class = LessonSerializer
-
-    def get_permissions(self):
-        """Настраиваем права доступа для владельцев и модераторов."""
-
-        if self.action in ["create", "destroy"]:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner,
-            ]  # Только владелец может создавать и удалять
-        else:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner | IsModerator,
-            ]  # Владелец и модератор могут редактировать и просматривать
-        return [permission() for permission in self.permission_classes]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -110,26 +96,11 @@ class LessonCreateAPIView(generics.CreateAPIView):
         return response
 
 
-class LessonListAPIView(generics.ListAPIView):
+class LessonListAPIView(LessonPermissionMixin, generics.ListAPIView):
     """API endpoint для получения списка уроков."""
 
     queryset = Lesson.objects.all().order_by("id")
     serializer_class = LessonSerializer
-
-    def get_permissions(self):
-        """Настраиваем права доступа для владельцев и модераторов."""
-
-        if self.action in ["create", "destroy"]:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner,
-            ]  # Только владелец может создавать и удалять
-        else:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner | IsModerator,
-            ]  # Владелец и модератор могут редактировать и просматривать
-        return [permission() for permission in self.permission_classes]
 
     def list(self, request, *args, **kwargs):
         """Переопределение метода для получения списка уроков."""
@@ -137,26 +108,11 @@ class LessonListAPIView(generics.ListAPIView):
         return super().list(request, *args, **kwargs)
 
 
-class LessonRetrieveAPIView(generics.RetrieveAPIView):
+class LessonRetrieveAPIView(LessonPermissionMixin, generics.RetrieveAPIView):
     """API endpoint для получения одного урока."""
 
     queryset = Lesson.objects.all().order_by("id")
     serializer_class = LessonSerializer
-
-    def get_permissions(self):
-        """Настраиваем права доступа для владельцев и модераторов."""
-
-        if self.action in ["create", "destroy"]:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner,
-            ]  # Только владелец может создавать и удалять
-        else:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner | IsModerator,
-            ]  # Владелец и модератор могут редактировать и просматривать
-        return [permission() for permission in self.permission_classes]
 
     def retrieve(self, request, *args, **kwargs):
         """Переопределение метода для получения одного курса."""
@@ -165,26 +121,11 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
         return super().retrieve(request, *args, **kwargs)
 
 
-class LessonUpdateAPIView(generics.UpdateAPIView):
+class LessonUpdateAPIView(LessonPermissionMixin, generics.UpdateAPIView):
     """API endpoint для обновления урока."""
 
     queryset = Lesson.objects.all().order_by("id")
     serializer_class = LessonSerializer
-
-    def get_permissions(self):
-        """Настраиваем права доступа для владельцев и модераторов."""
-
-        if self.action in ["create", "destroy"]:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner,
-            ]  # Только владелец может создавать и удалять
-        else:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner | IsModerator,
-            ]  # Владелец и модератор могут редактировать и просматривать
-        return [permission() for permission in self.permission_classes]
 
     def update(self, request, *args, **kwargs):
         """Переопределение метода для обновления урока."""
@@ -195,26 +136,12 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
         return response
 
 
-class LessonDestroyAPIView(generics.DestroyAPIView):
+class LessonDestroyAPIView(LessonPermissionMixin, generics.DestroyAPIView):
     """API endpoint для удаления урока."""
 
     queryset = Lesson.objects.all().order_by("id")
     serializer_class = LessonSerializer
 
-    def get_permissions(self):
-        """Настраиваем права доступа для владельцев и модераторов."""
-
-        if self.action in ["create", "destroy"]:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner,
-            ]  # Только владелец может создавать и удалять
-        else:
-            self.permission_classes = [
-                IsAuthenticated,
-                IsOwner | IsModerator,
-            ]  # Владелец и модератор могут редактировать и просматривать
-        return [permission() for permission in self.permission_classes]
 
     def destroy(self, request, *args, **kwargs):
         """Переопределение метода для удаления урока."""

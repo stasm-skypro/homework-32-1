@@ -11,7 +11,6 @@ class DescriptionValidator:
         pattern = re.compile(r"(?:https?://)?(?:www\.)?(youtube\.com|youtu\.be)")  # Проверяет также сокращённые ссылки
 
         field_to_validate = dict(value).get(self.field)
-        if not pattern.match(field_to_validate):
-            raise serializers.ValidationError(
-                "Ссылка на другие каналы кроме youtube не является допустимой."
-            )
+        if "https://" in field_to_validate or "http://" in field_to_validate:
+            if not pattern.match(field_to_validate):
+                raise serializers.ValidationError("Ссылка на другие каналы кроме youtube не допустима.")
