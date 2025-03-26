@@ -52,13 +52,27 @@
 
 #### Запрос с ошибкой:
 Команда:    
-```POST``` ```http://127.0.0.1:8000/lesson/```
+```POST``` ```http://127.0.0.1:8000/lesson/create/```
 
 Тело запроса:
 ```json
 {
-    
+    "name": "Test lesson",
+    "description": "Test lesson https://yandex.kz",
+    "image": null,
+    "video": null,
+    "course": 1
 }
+```
+
+Ответ:
+```json
+{
+ "non_field_errors": [
+        "Ссылка на другие каналы кроме youtube не допустима."
+    ]   
+}
+```
 
 ## 2. Модель подписки пользователя
 
