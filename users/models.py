@@ -154,3 +154,30 @@ class Payment(models.Model):
     def __str__(self):
         """Метод для отображения объекта оплаты в админке."""
         return f"{self.user.email} - {self.amount} руб."
+
+
+class Subscription(models.Model):
+    """Класс подписки. Модель 'Подписка'."""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь",
+        related_name="subscriptions"
+    )
+
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        verbose_name="Курс",
+    )
+
+    class Meta:
+        """Мета-класс модели подписки."""
+
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+
+    def __str__(self):
+        """Метод для отображения объекта подписки в админке."""
+        return f"{self.user.email} - {self.course.name}"
