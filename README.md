@@ -76,8 +76,58 @@
 
 ## 2. Модель подписки пользователя
 
+Добавлена модель подписки на обновления курса для пользователя.
 
+#### Просмотр списка курсов
 
+Команда:
+```GET``` ```http://127.0.0.1:8000/course/```
+
+Ответ:
+```json
+[
+   {
+        "id": 1,
+        "name": "Python для начинающих",
+        "description": "Основы языка Python.",
+        "lessons_count": 2,
+        "is_subscribed": false
+    },
+    {
+        "id": 2,
+        "name": "Django с нуля",
+        "description": "Создание веб-приложений на Django.",
+        "lessons_count": 1,
+        "is_subscribed": false
+    },
+  ...
+]
+``` 
+
+#### Просмотр курса
+
+Команда:    
+```GET``` ```http://127.0.0.1:8000/course/2/```
+
+Ответ:
+```json
+{
+    "name": "Django с нуля",
+    "description": "Создание веб-приложений на Django.",
+    "lessons_count": 1,
+    "lessons": [
+        {
+            "id": 3,
+            "name": "Основы Django",
+            "description": "Структура проекта Django.",
+            "image": "http://127.0.0.1:8000/media/lessons/django_basics.jpg",
+            "video": "http://127.0.0.1:8000/media/lessons/django_basics.mp4",
+            "course": 2,
+            "owner": null
+        }
+    ]
+}
+```
 
 ## 3. Пагинация
 
