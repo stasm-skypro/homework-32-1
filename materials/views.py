@@ -4,6 +4,7 @@ from rest_framework import viewsets, generics
 from users.permissions import IsModerator, DenyAll, IsOwner
 from .mixins import LessonPermissionMixin
 from .models import Course, Lesson
+from .paginators import CoursePagination
 from .serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
 import logging
 
@@ -17,11 +18,13 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     queryset = Course.objects.all().order_by("id")
 
+    # -- Serializer
     def get_serializer_class(self):
         if self.action == "retrieve":
             return CourseDetailSerializer
         return CourseSerializer
 
+    # -- Permissions
     def get_permissions(self):
         """Настраиваем права доступа для владельцев и модераторов."""
 
@@ -37,11 +40,17 @@ class CourseViewSet(viewsets.ModelViewSet):
             ]  # Владелец и модератор могут редактировать и просматривать
         return [permission() for permission in self.permission_classes]
 
+    # -- Pagination
+    pagination_class = CoursePagination
+
+    # -- Переопределение метода для использования сериализатора
     def perform_create(self, serializer):
+        """Сохраняет владельца."""
         serializer.save(owner=self.request.user)
 
+    # -- Переопределение методов CRUD для логгирования
     def create(self, request, *args, **kwargs):
-        """Переопределение метода для создания курса."""
+        """Переопределяет создание курса для логгирования."""
         response = super().create(request, *args, **kwargs)
         logger.info(
             "Создан новый курс: %s пользователем %s",
@@ -51,18 +60,18 @@ class CourseViewSet(viewsets.ModelViewSet):
         return response
 
     def list(self, request, *args, **kwargs):
-        """Переопределение метода для получения списка курсов."""
+        """Переопределяет получение списка курсов для логгирования."""
         logger.info("Получен запрос на список курсов от %s", request.user)
         return super().list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        """Переопределение метода для получения одного курса."""
+        """Переопределяет получение одного курса для логгирования."""
         course = self.get_object()
         logger.info("Курс %s запрошен пользователем %s", course.name, request.user)
         return super().retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        """Переопределение метода для обновления курса."""
+        """Переопределяет обновление курса для логгирования."""
         response = super().update(request, *args, **kwargs)
         logger.info(
             "Курс %s обновлён пользователем %s", response.data.get("name"), request.user
@@ -70,7 +79,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return response
 
     def destroy(self, request, *args, **kwargs):
-        """Переопределение метода для удаления курса."""
+        """Переопределяет удаление курса для логгирования."""
         course = self.get_object()
         logger.warning("Курс %s удалён пользователем %s", course.name, request.user)
         return super().destroy(request, *args, **kwargs)
@@ -86,7 +95,7 @@ class LessonCreateAPIView(LessonPermissionMixin, generics.CreateAPIView):
         serializer.save(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        """Переопределение метода для создания урока."""
+        """Переопределяет создание урока для логгирования."""
         response = super().create(request, *args, **kwargs)
         logger.info(
             "Создан новый урок: %s пользователем %s",
@@ -101,9 +110,10 @@ class LessonListAPIView(LessonPermissionMixin, generics.ListAPIView):
 
     queryset = Lesson.objects.all().order_by("id")
     serializer_class = LessonSerializer
+    pagination_class = CoursePagination
 
     def list(self, request, *args, **kwargs):
-        """Переопределение метода для получения списка уроков."""
+        """Переопределяет получение списка уроков для логгирования."""
         logger.info("Запрос на получение списка уроков от %s", request.user)
         return super().list(request, *args, **kwargs)
 
@@ -115,7 +125,7 @@ class LessonRetrieveAPIView(LessonPermissionMixin, generics.RetrieveAPIView):
     serializer_class = LessonSerializer
 
     def retrieve(self, request, *args, **kwargs):
-        """Переопределение метода для получения одного курса."""
+        """Переопределяет получение одного урока для логгирования."""
         lesson = self.get_object()
         logger.info("Урок %s запрошен пользователем %s", lesson.name, request.user)
         return super().retrieve(request, *args, **kwargs)
@@ -128,7 +138,7 @@ class LessonUpdateAPIView(LessonPermissionMixin, generics.UpdateAPIView):
     serializer_class = LessonSerializer
 
     def update(self, request, *args, **kwargs):
-        """Переопределение метода для обновления урока."""
+        """Переопределяет обновление урока для логгирования."""
         response = super().update(request, *args, **kwargs)
         logger.info(
             "Урок %s обновлён пользователем %s", response.data.get("name"), request.user
@@ -144,7 +154,7 @@ class LessonDestroyAPIView(LessonPermissionMixin, generics.DestroyAPIView):
 
 
     def destroy(self, request, *args, **kwargs):
-        """Переопределение метода для удаления урока."""
+        """Переопределяет удаление урока для логгирования."""
         lesson = self.get_object()
         logger.warning("Урок %s удалён пользователем %s", lesson.name, request.user)
         return super().destroy(request, *args, **kwargs)
