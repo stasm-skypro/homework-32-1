@@ -131,4 +131,75 @@
 
 ## 3. Пагинация
 
+По умолчаню пагинация имеет такие настройки:
+- Количество элементов на одной странице - 2
+- Максимальное количество элементов на одной странице - 10
+
+#### Просмотр списка курсов
+
+Команда:
+```GET``` ```http://127.0.0.1:8000/course/```
+
+Ответ:
+```json
+{
+    "count": 13,
+    "next": "http://127.0.0.1:8000/course/?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "name": "Python для начинающих",
+            "description": "Основы языка Python.",
+            "lessons_count": 2,
+            "is_subscribed": false
+        },
+        {
+            "id": 2,
+            "name": "Django с нуля",
+            "description": "Создание веб-приложений на Django.",
+            "lessons_count": 1,
+            "is_subscribed": false
+        }
+    ]
+}
+```
+
+#### Просмотр курса - установим page_size = 3
+
+Команда:
+```GET``` ```http://127.0.0.1:8000/course/?page_size=3```
+
+Ответ:    
+```json
+{
+    "count": 13,
+    "next": "http://127.0.0.1:8000/course/?page=2&page_size=3",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "name": "Python для начинающих",
+            "description": "Основы языка Python.",
+            "lessons_count": 2,
+            "is_subscribed": false
+        },
+        {
+            "id": 2,
+            "name": "Django с нуля",
+            "description": "Создание веб-приложений на Django.",
+            "lessons_count": 1,
+            "is_subscribed": false
+        },
+        {
+            "id": 3,
+            "name": "SQL для начинающих",
+            "description": "Основы работы с базами данных.",
+            "lessons_count": 1,
+            "is_subscribed": false
+        }
+    ]
+}
+```
+
 ## 4. Тестирование
