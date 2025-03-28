@@ -202,4 +202,47 @@
 }
 ```
 
+#### Просмотр урокова - установим page_size = 3
+
+Команда:
+```GET``` ```http://127.0.0.1:8000/lesson/list/?page=1&page_size=3```
+
+Ответ:
+```json
+{
+    "count": 5,
+    "next": "http://127.0.0.1:8000/lesson/list/?page=2&page_size=3",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "name": "Введение в Python",
+            "description": "История и применение Python.",
+            "image": "http://127.0.0.1:8000/media/lessons/python_intro.jpg",
+            "video": "http://127.0.0.1:8000/media/lessons/python_intro.mp4",
+            "course": 1,
+            "owner": null
+        },
+        {
+            "id": 2,
+            "name": "Переменные и типы данных",
+            "description": "Разбор переменных и основных типов данных.",
+            "image": "http://127.0.0.1:8000/media/lessons/python_vars.jpg",
+            "video": "http://127.0.0.1:8000/media/lessons/python_vars.mp4",
+            "course": 1,
+            "owner": null
+        },
+        {
+            "id": 3,
+            "name": "Основы Django",
+            "description": "Структура проекта Django.",
+            "image": "http://127.0.0.1:8000/media/lessons/django_basics.jpg",
+            "video": "http://127.0.0.1:8000/media/lessons/django_basics.mp4",
+            "course": 2,
+            "owner": null
+        }
+    ]
+}
+```
+
 ## 4. Тестирование
