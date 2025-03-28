@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from materials.models import Course
@@ -23,7 +22,7 @@ class SubscriptionAPIViewTestCase(APITestCase):
 
         # URL для подписки
         # self.subscription_url = reverse("course", kwargs={"pk": self.course.id})
-        self.subscription_url = "/course/"
+        self.subscription_url = f"/course/{self.course.id}/"
 
     def test_subscribe_to_course(self):
         """Тест подписки пользователя на курс."""
