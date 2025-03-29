@@ -1,7 +1,7 @@
 # View for materials app
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, generics
-from users.permissions import IsModerator, DenyAll, IsOwner
+from users.permissions import IsModerator, IsOwner
 from .mixins import LessonPermissionMixin
 from .models import Course, Lesson
 from .paginators import CoursePagination
