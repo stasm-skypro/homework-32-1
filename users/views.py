@@ -128,9 +128,11 @@ class SubscriptionAPIView(APIView):
             subs_item.delete()
             message = "Подписка удалена"
             logger.info("Подписка на курс %s удалена пользователем %s", course_item, user)
+            answer = status.HTTP_204_NO_CONTENT
         else:
             Subscription.objects.create(user=user, course=course_item)
             message = "Подписка добавлена"
             logger.info("Подписка на курс %s добавлена пользователем %s", course_item, user)
+            answer = status.HTTP_201_CREATED
 
-        return Response({"message": message}, status=status.HTTP_201_CREATED)
+        return Response({"message": message}, status=answer)
