@@ -12,7 +12,7 @@ routers.register(r"user", UserViewSet, basename="user")
 routers.register(r"payment", PaymentViewSet, basename="payment")
 
 urlpatterns = [
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenObtainPairView.as_view(), name='token_refresh'),
-    path('subscription/', SubscriptionAPIView.as_view(), name='subscription'),
+    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenObtainPairView.as_view(), name="token_refresh"),
+    path("subscription/", SubscriptionAPIView.as_view(), name="subscription"),
 ] + routers.urls

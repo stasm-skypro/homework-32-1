@@ -104,28 +104,22 @@
 ]
 ``` 
 
-#### Просмотр курса
+#### Установка подписки
 
 Команда:    
-```GET``` ```http://127.0.0.1:8000/course/2/```
+```POST``` ```http://127.0.0.1:8000/subscription/```
+
+Тело запроса:
+```json
+{
+    "course_id": 1      
+}
+```
 
 Ответ:
 ```json
 {
-    "name": "Django с нуля",
-    "description": "Создание веб-приложений на Django.",
-    "lessons_count": 1,
-    "lessons": [
-        {
-            "id": 3,
-            "name": "Основы Django",
-            "description": "Структура проекта Django.",
-            "image": "http://127.0.0.1:8000/media/lessons/django_basics.jpg",
-            "video": "http://127.0.0.1:8000/media/lessons/django_basics.mp4",
-            "course": 2,
-            "owner": null
-        }
-    ]
+    "message": "Подписка добавлена"
 }
 ```
 
