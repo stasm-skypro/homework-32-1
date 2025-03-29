@@ -37,9 +37,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 return UserDetailSerializer  # Полный доступ для владельца
         elif self.action == "create":
             return RegisterSerializer
-        return (
-            UserSerializer  # Ограниченный доступ для чужого профиля и списка профилей
-        )
+        return UserSerializer  # Ограниченный доступ для чужого профиля и списка профилей
 
     def get_permissions(self):
         """Ограничиваем редактирование только владельцам"""
@@ -51,42 +49,37 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def create(self, request, *args, **kwargs):
-        """Переопределение метода create для регистрации пользователей. В метод добавлены разрешения и логгер."""
+        """Переопределяет создание пользователя для логгирования."""
         self.permission_classes = [AllowAny]
         response = super().create(request, *args, **kwargs)
         logger.info(
-            "Пользователь с именем %s и email %s успешно создан."
-            % (request.data["username"], request.data["email"])
+            "Пользователь с именем %s и email %s успешно создан." % (request.data["username"], request.data["email"])
         )
         return response
 
     def list(self, request, *args, **kwargs):
-        """Переопределение метода list для вывода списка пользователей. В метод добавлены разрешения и логгер."""
+        """Переопределяет получение списка пользователей для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().list(request, *args, **kwargs)
         logger.info("Список пользователей успешно получен.")
         return response
 
     def retrieve(self, request, *args, **kwargs):
-        """Переопределение метода retrieve для вывода информации о пользователе. В метод добавлены разрешения и логгер."""
+        """Переопределяет получение информации о пользователе для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().retrieve(request, *args, **kwargs)
-        logger.info(
-            "Информация о пользователе с id %s успешно получена." % kwargs["pk"]
-        )
+        logger.info("Информация о пользователе с id %s успешно получена." % kwargs["pk"])
         return response
 
     def update(self, request, *args, **kwargs):
-        """Переопределение метода update для редактирования информации о пользователе. В метод добавлены разрешения и логгер."""
+        """Переопределяет обновление информации о пользователе для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().update(request, *args, **kwargs)
-        logger.info(
-            "Информация о пользователе с id %s успешно обновлена." % kwargs["pk"]
-        )
+        logger.info("Информация о пользователе с id %s успешно обновлена." % kwargs["pk"])
         return response
 
     def destroy(self, request, *args, **kwargs):
-        """Переопределение метода destroy для удаления пользователя. В метод добавлены разрешения и логгер."""
+        """Переопределяет удаление пользователя для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().destroy(request, *args, **kwargs)
         logger.info("Пользователь с id %s успешно удален." % kwargs["pk"])
@@ -124,6 +117,7 @@ class SubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
+        """Переопределяет создание/удаление подписки и добавляет логгирование."""
         user = request.user
         course_id = request.data.get("course_id")
 

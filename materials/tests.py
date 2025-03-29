@@ -2,8 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from materials.models import Lesson, Course
 from users.models import User
-
-# Можно импортировать пользователя из users.models или получить таким способом
+# Можно импортировать пользователя из users.models или получить через
 # User = get_user_model()
 
 
