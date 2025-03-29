@@ -1,11 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters, status
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .models import User, Payment
+from materials.models import Course
+from .models import User, Payment, Subscription
 from .permissions import IsProfileOwner
 from .serializers import (
     UserSerializer,
@@ -35,9 +37,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 return UserDetailSerializer  # Полный доступ для владельца
         elif self.action == "create":
             return RegisterSerializer
-        return (
-            UserSerializer  # Ограниченный доступ для чужого профиля и списка профилей
-        )
+        return UserSerializer  # Ограниченный доступ для чужого профиля и списка профилей
 
     def get_permissions(self):
         """Ограничиваем редактирование только владельцам"""
@@ -49,42 +49,37 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def create(self, request, *args, **kwargs):
-        """Переопределение метода create для регистрации пользователей. В метод добавлены разрешения и логгер."""
+        """Переопределяет создание пользователя для логгирования."""
         self.permission_classes = [AllowAny]
         response = super().create(request, *args, **kwargs)
         logger.info(
-            "Пользователь с именем %s и email %s успешно создан."
-            % (request.data["username"], request.data["email"])
+            "Пользователь с именем %s и email %s успешно создан." % (request.data["username"], request.data["email"])
         )
         return response
 
     def list(self, request, *args, **kwargs):
-        """Переопределение метода list для вывода списка пользователей. В метод добавлены разрешения и логгер."""
+        """Переопределяет получение списка пользователей для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().list(request, *args, **kwargs)
         logger.info("Список пользователей успешно получен.")
         return response
 
     def retrieve(self, request, *args, **kwargs):
-        """Переопределение метода retrieve для вывода информации о пользователе. В метод добавлены разрешения и логгер."""
+        """Переопределяет получение информации о пользователе для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().retrieve(request, *args, **kwargs)
-        logger.info(
-            "Информация о пользователе с id %s успешно получена." % kwargs["pk"]
-        )
+        logger.info("Информация о пользователе с id %s успешно получена." % kwargs["pk"])
         return response
 
     def update(self, request, *args, **kwargs):
-        """Переопределение метода update для редактирования информации о пользователе. В метод добавлены разрешения и логгер."""
+        """Переопределяет обновление информации о пользователе для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().update(request, *args, **kwargs)
-        logger.info(
-            "Информация о пользователе с id %s успешно обновлена." % kwargs["pk"]
-        )
+        logger.info("Информация о пользователе с id %s успешно обновлена." % kwargs["pk"])
         return response
 
     def destroy(self, request, *args, **kwargs):
-        """Переопределение метода destroy для удаления пользователя. В метод добавлены разрешения и логгер."""
+        """Переопределяет удаление пользователя для логгирования."""
         self.permission_classes = [IsAuthenticated]
         response = super().destroy(request, *args, **kwargs)
         logger.info("Пользователь с id %s успешно удален." % kwargs["pk"])
@@ -116,35 +111,28 @@ class PaymentViewSet(viewsets.ModelViewSet):
 
 
 # -- Subscription ViewSet --
-class SetUserSubscriptionView(APIView):
-    def post(self, request):
-        # Получите id пользователя и данные о подписке из запроса
-        user_id = request.data.get('user_id')
-        subscription_plan = request.data.get('subscription_plan')
+class SubscriptionAPIView(APIView):
+    """API для управления подписками пользователей на курсы."""
 
-        # Проверка данных: если пользователь не подписан, то выбрасываем исключение
-        if not user_id or not subscription_plan:
-            return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
+    permission_classes = [IsAuthenticated]
 
-        # Set the user subscription (you'll need to implement the actual logic here)
-        # For example, you might use a model to store the subscription details
-        # subscription = Subscription.objects.create(user_id=user_id, plan=subscription_plan)
+    def post(self, request, *args, **kwargs):
+        """Переопределяет создание/удаление подписки и добавляет логгирование."""
+        user = request.user
+        course_id = request.data.get("course_id")
 
-        return Response({'message': 'User subscription set successfully'}, status=status.HTTP_201_CREATED)
+        course_item = get_object_or_404(Course, id=course_id)
+        subs_item = Subscription.objects.filter(user=user, course=course_item)
 
+        if subs_item.exists():
+            subs_item.delete()
+            message = "Подписка удалена"
+            logger.info("Подписка на курс %s удалена пользователем %s", course_item, user)
+            answer = status.HTTP_204_NO_CONTENT
+        else:
+            Subscription.objects.create(user=user, course=course_item)
+            message = "Подписка добавлена"
+            logger.info("Подписка на курс %s добавлена пользователем %s", course_item, user)
+            answer = status.HTTP_201_CREATED
 
-class DeleteUserSubscriptionView(APIView):
-    def post(self, request):
-        # Get the user ID from the request data
-        user_id = request.data.get('user_id')
-
-        # Validate the request data
-        if not user_id:
-            return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Delete the user subscription (you'll need to implement the actual logic here)
-        # For example, you might use a model to store the subscription details
-        # subscription = Subscription.objects.get(user_id=user_id)
-        # subscription.delete()
-
-        return Response({'message': 'User subscription deleted successfully'}, status=status.HTTP_200_OK)
+        return Response({"message": message}, status=answer)
