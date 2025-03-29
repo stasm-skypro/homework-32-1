@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -138,4 +138,4 @@ class SubscriptionAPIView(APIView):
             message = "Подписка добавлена"
             logger.info("Подписка на курс %s добавлена пользователем %s", course_item, user)
 
-        return Response({"message": message})
+        return Response({"message": message}, status=status.HTTP_201_CREATED)
