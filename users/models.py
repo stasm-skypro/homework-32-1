@@ -76,6 +76,12 @@ class User(AbstractUser):
         null=True,
     )
 
+    is_moderator = models.BooleanField(
+        default=False,
+        verbose_name="Модератор",
+        help_text="Пользователь является модератором",
+    )
+
     objects = UserManager()
 
     USERNAME_FIELD = "email"

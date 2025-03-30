@@ -17,7 +17,8 @@ app_name = MaterialsConfig.name
 router = routers.DefaultRouter()
 router.register(r"course", CourseViewSet, basename="course")  # URL-ы для Вьюсета
 
-urlpatterns = [  # URL-ы для APIView
+urlpatterns = [
+    # URL-ы для Lesson APIView
     path("lesson/create/", LessonCreateAPIView.as_view(), name="lesson-create"),
     path("lesson/list/", LessonListAPIView.as_view(), name="lesson-list"),
     path("lesson/list/<int:pk>/", LessonRetrieveAPIView.as_view(), name="lesson-detail"),
